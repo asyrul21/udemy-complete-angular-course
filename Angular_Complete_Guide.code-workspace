@@ -1,0 +1,22 @@
+{
+  "folders": [
+    {
+      "path": "course-project"
+    },
+    {
+      "path": "forms-td"
+    },
+    {
+      "path": "forms-reactive"
+    },
+    {
+      "path": "pipes"
+    },
+    {
+      "path": "http-requests"
+    },
+    {
+      "path": "course-project-ngrx"
+    }
+  ]
+}
