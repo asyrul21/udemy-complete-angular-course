@@ -5,5 +5,6 @@
 ```bash
 
 npm install --save @ngrx/store
+npm install --save @ngrx/effects
 
 ```

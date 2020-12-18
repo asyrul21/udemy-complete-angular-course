@@ -12,6 +12,11 @@ import { environment } from '../../environments/environment';
 // will be swapped automatically to environment.prod.ts when
 // build --prod
 
+// ngrx store
+import { Store } from '@ngrx/store';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from './store/auth.actions';
+
 export interface AuthResponseData {
   kind: string;
   idToken: string;
@@ -34,7 +39,11 @@ export class AuthService {
 
   private tokenExpirationTimer: any;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private store: Store<fromApp.AppState>
+  ) {}
 
   signUp(email: string, password: string) {
     return this.http
@@ -105,7 +114,17 @@ export class AuthService {
     );
 
     if (loadedUser.token) {
-      this.user.next(loadedUser);
+      // this.user.next(loadedUser);
+
+      // ngrx redux
+      this.store.dispatch(
+        new AuthActions.Login({
+          email: loadedUser.email,
+          userId: loadedUser.id,
+          token: loadedUser.token,
+          expirationDate: new Date(userData._tokenExpirationDate),
+        })
+      );
 
       // start auto logout timer
       const expirationDuration =
@@ -117,7 +136,10 @@ export class AuthService {
   }
 
   logout() {
-    this.user.next(null);
+    // this.user.next(null);
+
+    // ngrx redux
+    this.store.dispatch(new AuthActions.Logout());
     this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
 
@@ -139,10 +161,20 @@ export class AuthService {
     token: string,
     expiresIn: number
   ) {
-    const expirationData = new Date(new Date().getTime() + expiresIn * 1000);
-    const user = new User(email, userId, token, expirationData);
+    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+    const user = new User(email, userId, token, expirationDate);
     // set new currently loggen in user
-    this.user.next(user);
+    // this.user.next(user);
+
+    // ngrx redux
+    this.store.dispatch(
+      new AuthActions.Login({
+        email,
+        userId,
+        token,
+        expirationDate,
+      })
+    );
 
     // start auto logout timer
     this.autoLogout(expiresIn * 1000);

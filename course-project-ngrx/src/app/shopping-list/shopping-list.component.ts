@@ -5,23 +5,27 @@ import { Observable, Subscription } from 'rxjs';
 import { LoggingService } from '../logging.service';
 import { Store } from '@ngrx/store';
 
+import * as ShoppingListActions from './store/shopping-list.actions';
+// App state import
+import * as fromApp from '../store/app.reducer';
+
 @Component({
   selector: 'app-shopping-list',
   templateUrl: './shopping-list.component.html',
   styleUrls: ['./shopping-list.component.css'],
   // providers: [ShoppingListService]
 })
-export class ShoppingListComponent implements OnInit, OnDestroy {
+export class ShoppingListComponent implements OnInit {
   // ingredients: Ingredient[] = [];
   // to use store.select we need to assign the value as observable
   ingredients: Observable<{ ingredients: Ingredient[] }>;
 
-  ingredientsChangedSub: Subscription;
+  // ingredientsChangedSub: Subscription;
 
   constructor(
     private SLService: ShoppingListService,
     private loggingService: LoggingService,
-    private store: Store<{ shoppingList: { ingredients: Ingredient[] } }> // ngrx redux - connecting to the ingredients state
+    private store: Store<fromApp.AppState> // ngrx redux - connecting to the ingredients state
   ) {}
 
   ngOnInit(): void {
@@ -38,11 +42,14 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
     this.ingredients = this.store.select('shoppingList');
   }
 
-  ngOnDestroy() {
-    this.ingredientsChangedSub.unsubscribe();
-  }
+  // ngOnDestroy() {
+  //   this.ingredientsChangedSub.unsubscribe();
+  // }
 
   onEditItem(index: number) {
-    this.SLService.startedEditing.next(index);
+    // this.SLService.startedEditing.next(index);
+    // use ngrx redux
+
+    this.store.dispatch(new ShoppingListActions.StartEdit(index));
   }
 }

@@ -20,7 +20,11 @@ import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core.module';
 import { LoggingService } from './logging.service';
 import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+import { authReducer } from './auth/store/auth.reducer';
 // import { AuthModule } from './auth/auth.module';
+import * as fromApp from './store/app.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { AuthEffects } from './auth/store/auth.effects';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -33,7 +37,9 @@ import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer
     // AuthModule,
     SharedModule,
     CoreModule,
-    StoreModule.forRoot({ shoppingList: shoppingListReducer }),
+    StoreModule.forRoot(fromApp.appReducer),
+    // register effect module
+    EffectsModule.forRoot([AuthEffects]),
   ],
   bootstrap: [AppComponent],
   providers: [LoggingService],
