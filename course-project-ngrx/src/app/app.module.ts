@@ -9,6 +9,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 // ngrx and redux
 import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 // routing
 import { AppRoutingModule } from './app-routing.module';
@@ -25,6 +27,7 @@ import { authReducer } from './auth/store/auth.reducer';
 import * as fromApp from './store/app.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { AuthEffects } from './auth/store/auth.effects';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -40,6 +43,8 @@ import { AuthEffects } from './auth/store/auth.effects';
     StoreModule.forRoot(fromApp.appReducer),
     // register effect module
     EffectsModule.forRoot([AuthEffects]),
+    StoreDevtoolsModule.instrument({ logOnly: environment.production }),
+    StoreRouterConnectingModule.forRoot(),
   ],
   bootstrap: [AppComponent],
   providers: [LoggingService],
