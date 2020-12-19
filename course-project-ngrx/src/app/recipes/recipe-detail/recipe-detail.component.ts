@@ -3,11 +3,16 @@ import { Recipe } from '../recipe.model';
 import { ShoppingListService } from 'src/app/shopping-list/shopping-list.service';
 import { RecipeService } from '../recipe.service';
 import { ActivatedRoute, Data, Params, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../store/app.reducer';
+import * as RecipeActions from '../store/recipe.actions';
+import * as ShoppingLisActions from '../../shopping-list/store/shopping-list.actions';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recipe-detail',
   templateUrl: './recipe-detail.component.html',
-  styleUrls: ['./recipe-detail.component.css']
+  styleUrls: ['./recipe-detail.component.css'],
 })
 export class RecipeDetailComponent implements OnInit {
   // @Input() selectedRecipe: Recipe;
@@ -15,7 +20,12 @@ export class RecipeDetailComponent implements OnInit {
   clickedManage: boolean = false;
   id: number;
 
-  constructor(private recipeService: RecipeService, private currentRoute: ActivatedRoute, private router: Router) { }
+  constructor(
+    private recipeService: RecipeService,
+    private currentRoute: ActivatedRoute,
+    private router: Router,
+    private store: Store<fromApp.AppState>
+  ) {}
 
   ngOnInit(): void {
     // console.log(this.currentRoute.snapshot.params);
@@ -24,16 +34,32 @@ export class RecipeDetailComponent implements OnInit {
 
     // must subsribe to listen to changes
     // if method below is implemented, the method above is not needed
-    this.currentRoute.params.subscribe((params: Params) => {
-      this.id = +params['id'];
-      this.selectedRecipe = this.recipeService.getRecipe(+params['id']);
-    });
+    this.currentRoute.params
+      .pipe(
+        map((params) => {
+          return +params['id'];
+        }),
+        switchMap((id) => {
+          this.id = id;
+          return this.store.select('recipes');
+        }),
+        map((recipeState) => {
+          return recipeState.recipes.find((recipe, index) => {
+            return index === this.id;
+          });
+        })
+      )
+      .subscribe((recipe) => {
+        this.selectedRecipe = recipe;
+      });
   }
 
   onClickEdit() {
     // this.router.navigate(['edit'], { relativeTo: this.currentRoute })
     // not necessary, but only for demo purposes
-    this.router.navigate(['../', this.id, 'edit'], { relativeTo: this.currentRoute });
+    this.router.navigate(['../', this.id, 'edit'], {
+      relativeTo: this.currentRoute,
+    });
   }
 
   // alternative approach
@@ -44,13 +70,19 @@ export class RecipeDetailComponent implements OnInit {
   // }
 
   onClickToShoppingList() {
-    console.log(this.selectedRecipe.ingredients);
+    // this.recipeService.addIngredientToShoppingList(
+    //   this.selectedRecipe.ingredients
+    // );
 
-    this.recipeService.addIngredientToShoppingList(this.selectedRecipe.ingredients);
+    this.store.dispatch(
+      new ShoppingLisActions.AddIngredients(this.selectedRecipe.ingredients)
+    );
   }
 
   onDeleteRecipe() {
-    this.recipeService.deleteRecipe(this.id);
+    // this.recipeService.deleteRecipe(this.id);
+
+    this.store.dispatch(new RecipeActions.deleteRecipe(this.id));
     this.router.navigate(['/recipes']);
   }
 }
