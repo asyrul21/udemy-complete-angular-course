@@ -18,6 +18,9 @@ import { CoreModule } from './core.module';
 import { LoggingService } from './logging.service';
 // import { AuthModule } from './auth/auth.module';
 
+// animation
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
   imports: [
@@ -29,6 +32,7 @@ import { LoggingService } from './logging.service';
     // AuthModule,
     SharedModule,
     CoreModule,
+    BrowserAnimationsModule,
   ],
   bootstrap: [AppComponent],
   providers: [LoggingService],

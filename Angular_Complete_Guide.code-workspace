@@ -17,6 +17,15 @@
     },
     {
       "path": "course-project-ngrx"
+    },
+    {
+      "path": "animation"
+    },
+    {
+      "path": "serviceWorker"
+    },
+    {
+      "path": "unitTesting"
     }
   ]
 }

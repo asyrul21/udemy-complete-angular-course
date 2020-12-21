@@ -12,3 +12,9 @@ npm install --save-dev @ngrx/store-devtools
 npm install --save @ngrx/router-store
 
 ```
+
+## Angular Universal
+
+```bash
+ng add @nguniversal/express-engine --clientProject course-project
+```

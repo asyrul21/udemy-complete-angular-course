@@ -33,7 +33,7 @@ import { RecipeEffects } from './recipes/store/recipe.effects';
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     HttpClientModule,
     // RecipesModule, // feature module // moved to app-routing.module to enable lazy loading
